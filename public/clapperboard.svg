@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Body -->
+  <rect x="4" y="10" width="24" height="18" rx="1.5" fill="#1a1a2e" stroke="#c9a84c" stroke-width="1.2"/>
+  <!-- Clapper top bar -->
+  <rect x="4" y="6" width="24" height="5" rx="1" fill="#c9a84c"/>
+  <!-- Clapper stripes -->
+  <rect x="8" y="6" width="3" height="5" fill="#0a0a0a"/>
+  <rect x="14" y="6" width="3" height="5" fill="#0a0a0a"/>
+  <rect x="20" y="6" width="3" height="5" fill="#0a0a0a"/>
+  <!-- Light dot -->
+  <circle cx="16" cy="19" r="3" fill="#c9a84c" opacity="0.6"/>
+</svg>
