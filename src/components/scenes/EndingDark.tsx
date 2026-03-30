@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { FadeWrapper } from '../ui/FadeWrapper'
-import { getEnding } from '../../data/endings'
 import type { GameState, GameAction } from '../../types/game'
 
 interface EndingDarkProps {
@@ -11,7 +10,7 @@ interface EndingDarkProps {
 // ending_dark_a: Elliot applauds alone, one light stays on
 // ending_dark_b: Elliot leaves early, assistant conveys thanks
 export function EndingDark({ state, dispatch }: EndingDarkProps) {
-  const ending = getEnding(state.endingId ?? 'ending_dark_b')
+
   const isA = state.endingId === 'ending_dark_a'
 
   const [step, setStep] = useState(0)
