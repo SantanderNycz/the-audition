@@ -3,11 +3,15 @@ import type { ReactNode } from 'react'
 interface StudioLayoutProps {
   children: ReactNode
   spotlight?: boolean
+  background?: ReactNode
 }
 
-export function StudioLayout({ children, spotlight = true }: StudioLayoutProps) {
+export function StudioLayout({ children, spotlight = true, background }: StudioLayoutProps) {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-studio-black flex flex-col items-center justify-center">
+      {/* Stage background */}
+      {background}
+
       {/* Film grain overlay */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.04] z-10"

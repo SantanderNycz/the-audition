@@ -1,6 +1,8 @@
 import { useState, useEffect, type FormEvent } from 'react'
 import { StudioLayout } from '../layout/StudioLayout'
 import { FadeWrapper } from '../ui/FadeWrapper'
+import { StageBackground } from './StageBackground'
+import { synopsis } from '../../data/synopsis'
 import type { GameAction } from '../../types/game'
 
 type IntroStep =
@@ -9,7 +11,6 @@ type IntroStep =
   | 'called'
   | 'studio'
   | 'envelope'
-  | 'envelope-open'
   | 'title-card'
 
 interface IntroProps {
@@ -32,6 +33,28 @@ export function Intro({ dispatch }: IntroProps) {
   const [step, setStep] = useState<IntroStep>('waiting-room')
   const [nameInput, setNameInput] = useState('')
   const [playerName, setPlayerName] = useState('')
+  const [envelopeMode, setEnvelopeMode] = useState(false)      // text fades out
+  const [envelopeVisible, setEnvelopeVisible] = useState(false)  // envelope fades in
+  const [envelopeOpen, setEnvelopeOpen] = useState(false)        // envelope opens
+  const [screenplayVisible, setScreenplayVisible] = useState(false)
+
+  // Sequence: text fades out → envelope fades in → envelope opens → screenplay appears
+  function handleReadClick() {
+    setEnvelopeMode(true)                                        // t=0:    text fade-out (0.5s)
+    setTimeout(() => setEnvelopeVisible(true), 350)              // t=350:  envelope fade-in (0.7s)
+    setTimeout(() => setEnvelopeOpen(true), 550)                 // t=550:  envelope opens
+    setTimeout(() => setScreenplayVisible(true), 550 + 1700)     // t=2250: screenplay
+  }
+
+  // Closes the screenplay overlay, then advances to title-card
+  function handleGuardarClick() {
+    setScreenplayVisible(false)
+    setTimeout(() => {
+      setEnvelopeOpen(false)
+      setEnvelopeVisible(false)
+      go('title-card')
+    }, 650)
+  }
 
   // Auto-advance from title-card to game
   useEffect(() => {
@@ -55,7 +78,18 @@ export function Intro({ dispatch }: IntroProps) {
   }
 
   return (
-    <StudioLayout spotlight={step !== 'title-card'}>
+    <StudioLayout
+      spotlight={step !== 'title-card'}
+      background={
+        <StageBackground
+          scene="roteiro"
+          envelopeVisible={envelopeVisible}
+          envelopeOpen={envelopeOpen}
+          screenplayVisible={screenplayVisible}
+          onGuardarClick={handleGuardarClick}
+        />
+      }
+    >
       {step === 'waiting-room' && (
         <FadeWrapper key="waiting-room" duration={900}>
           <div className="space-y-6">
@@ -71,7 +105,7 @@ export function Intro({ dispatch }: IntroProps) {
                 Quadro de horários
               </p>
               <p className="text-studio-silver/70">AUDIÇÃO ABERTA</p>
-              <p className="text-studio-warm/80 tracking-wider">A LUZ DO PORTO</p>
+              <p className="text-studio-warm/80 tracking-wider">{synopsis.title}</p>
               <p className="text-studio-dim/60 mt-2">Dir.: E. Marsh</p>
             </div>
 
@@ -173,7 +207,14 @@ export function Intro({ dispatch }: IntroProps) {
 
       {step === 'envelope' && (
         <FadeWrapper key="envelope" duration={700}>
-          <div className="space-y-5">
+          <div
+            className="space-y-5"
+            style={{
+              opacity: envelopeMode ? 0 : 1,
+              pointerEvents: envelopeMode ? 'none' : 'auto',
+              transition: 'opacity 0.5s ease',
+            }}
+          >
             <p className="font-serif text-studio-silver/60 text-base leading-loose">
               Elliot não olha diretamente. Mexe nas folhas que tem no colo.
             </p>
@@ -186,62 +227,23 @@ export function Intro({ dispatch }: IntroProps) {
               Estende um envelope amarelado sem esperar resposta.
             </p>
 
-            <button
-              onClick={() => go('envelope-open')}
-              className="
-                mt-10 font-sans text-xs tracking-[0.25em] uppercase
-                text-studio-gold/60 hover:text-studio-gold
-                transition-colors duration-300 flex items-center gap-3
-              "
-            >
-              <span className="w-5 h-px bg-current" />
-              abrir o envelope
-            </button>
-          </div>
-        </FadeWrapper>
-      )}
+            <div className="mt-10 space-y-4">
+              {/* Read: triggers animated envelope opening in background */}
+              <button
+                onClick={handleReadClick}
+                className="
+                  w-full text-left font-sans text-xs tracking-[0.25em] uppercase
+                  text-studio-gold/60 hover:text-studio-gold
+                  transition-colors duration-300 flex items-center gap-3
+                "
+              >
+                <span className="w-5 h-px bg-current" />
+                ler o roteiro
+              </button>
 
-      {step === 'envelope-open' && (
-        <FadeWrapper key="envelope-open" duration={800}>
-          <div>
-            {/* Screenplay page */}
-            <div className="border border-studio-border/30 bg-[#0e0d0b] px-7 py-6 font-mono text-sm space-y-4">
-              <div className="text-center space-y-1 pb-4 border-b border-studio-border/20">
-                <p className="text-studio-warm/90 text-base tracking-widest font-bold">A LUZ DO PORTO</p>
-                <p className="text-studio-dim/60 text-xs tracking-wide">um filme de Elliot Marsh</p>
-              </div>
-
-              <div className="text-studio-dim/40 text-xs text-center py-2">
-                — página 1 —
-              </div>
-
-              <div className="space-y-1 text-studio-dim/50 text-xs leading-relaxed">
-                <p>INT. FAROL — NOITE</p>
-                <p className="pl-4 italic text-studio-dim/40">
-                  A luz gira. O guarda-faróis observa o mar.
-                </p>
-                <p className="pl-4 italic text-studio-dim/40">
-                  Há algo no horizonte. Difícil dizer o quê.
-                </p>
-              </div>
-
-              <div className="pt-4 border-t border-studio-border/20 space-y-2">
-                <p className="text-studio-dim/40 text-xs tracking-widest uppercase">
-                  Referências bibliográficas
-                </p>
-                <p className="text-studio-dim/50 text-xs leading-relaxed">
-                  Ribeiro, M. — <span className="italic">O Cuidador de Luzes.</span> Ed. Atlântica, 1987.
-                </p>
-                <p className="text-studio-dim/50 text-xs leading-relaxed">
-                  Lima, C.S. — <span className="italic">Isolamento e Identidade.</span> Tese de Doutoramento, Univ. de Coimbra, 1994.
-                </p>
-                <p className="text-studio-silver/40 text-xs leading-relaxed">
-                  <span className="italic">O Códice Meridiano</span> — sem autor, sem editora, sem data.
-                </p>
-              </div>
+              {/* Skip: proceed directly to title-card */}
+              <ContinueHint onClick={() => go('title-card')} label="não, obrigado" />
             </div>
-
-            <ContinueHint onClick={() => go('title-card')} />
           </div>
         </FadeWrapper>
       )}
@@ -250,10 +252,10 @@ export function Intro({ dispatch }: IntroProps) {
         <FadeWrapper key="title-card" duration={1200}>
           <div className="text-center py-16">
             <p className="font-sans text-xs tracking-[0.4em] uppercase text-studio-dim/40 mb-8">
-              um filme de Elliot Marsh
+              {synopsis.subtitle}
             </p>
             <h1 className="font-serif text-4xl md:text-5xl text-studio-warm font-semibold tracking-wide">
-              A LUZ DO PORTO
+              {synopsis.title}
             </h1>
           </div>
         </FadeWrapper>

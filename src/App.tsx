@@ -7,7 +7,7 @@ import { EndingDark } from './components/scenes/EndingDark'
 export function App() {
   const { state, dispatch } = useGameState()
 
-  if (state.phase === 'intro') {
+  if (state.phase === 'synopsis') {
     return <Intro dispatch={dispatch} />
   }
 

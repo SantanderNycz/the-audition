@@ -1,5 +1,5 @@
 interface ChoiceButtonProps {
-  optionLabel: 'A' | 'B'
+  optionLabel: string
   text: string
   onClick: () => void
   disabled?: boolean

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { FadeWrapper } from '../ui/FadeWrapper'
+import { BackgroundTransition } from './BackgroundTransition'
 import { getEnding } from '../../data/endings'
 import type { GameState, GameAction } from '../../types/game'
 
@@ -46,6 +47,8 @@ export function EndingLight({ state, dispatch }: EndingLightProps) {
 
   return (
     <div className="relative min-h-screen w-full bg-black flex flex-col items-center justify-center overflow-hidden">
+      <BackgroundTransition sceneId={state.endingId ?? 'ending_light_b'} />
+
       {/* Film grain */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.03] z-10"

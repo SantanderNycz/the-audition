@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { FadeWrapper } from '../ui/FadeWrapper'
+import { BackgroundTransition } from './BackgroundTransition'
 import type { GameState, GameAction } from '../../types/game'
 
 interface EndingDarkProps {
@@ -44,6 +45,8 @@ export function EndingDark({ state, dispatch }: EndingDarkProps) {
 
   return (
     <div className="relative min-h-screen w-full bg-studio-black flex flex-col items-center justify-center overflow-hidden">
+      <BackgroundTransition sceneId={state.endingId ?? 'ending_dark_b'} />
+
       {/* Film grain */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.04] z-10"
